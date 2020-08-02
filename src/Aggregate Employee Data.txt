@@ -1,0 +1,143 @@
+1. Create 2 tables:
+
+CREATE TABLE employee_sales_2
+(
+Attrition string,
+Department string,
+JobSatisfaction int,
+MonthlyIncome float
+);
+
+
+# Check that the table has been created with this query:
+
+SELECT * FROM employee_sales_2 LIMIT 10;
+
+
+# select the data from the employee_sales table into your table  
+
+INSERT OVERWRITE TABLE employee_sales_2
+SELECT Attrition, Department, JobSatisfaction, MonthlyIncome
+FROM employee_sales;
+
+
+# Check that the table has been created with this query:
+
+SELECT * FROM employee_sales_2 LIMIT 10;
+
+
+
+
+1. Count
+
+#Count of salespeople with attrition (92)
+
+SELECT COUNT(Attrition) AS Attrition_count
+FROM employee_sales_2
+WHERE Attrition LIKE "%true%";
+
+#Original
+#Count of people who believe mental health issues lead to workplace consequences:
+SELECT COUNT(mental_health_consequence) AS mental_health_consequence_count
+FROM survey_consequences
+WHERE mental_health_consequence LIKE "%Yes%";
+
+
+#Count of salespeople without attrition (354)
+
+SELECT COUNT(Attrition) AS Non_Attrition_count
+FROM employee_sales_2
+WHERE Attrition LIKE "%false%";
+
+
+
+2. Statistics
+
+#Basic Statistics for All Salespeople, Monthly Income
+
+SELECT AVG(MonthlyIncome) AS average_MonthlyIncome, MIN(MonthlyIncome) AS min_MonthlyIncome, MAX(MonthlyIncome) AS max_MonthlyIncome
+FROM employee_sales_2;
+
+#Basic Statistics for Attrition Salespeople, Monthly Income
+
+SELECT AVG(MonthlyIncome) AS average_Attrition_MonthlyIncome, MIN(MonthlyIncome) AS min_Attrition_MonthlyIncome, MAX(MonthlyIncome) AS max_Attrition_MonthlyIncome
+FROM employee_sales_2
+WHERE Attrition LIKE "%true%";
+
+#Basic Statistics for Non Attrition Salespeople, Monthly Income
+
+SELECT AVG(MonthlyIncome) AS average_Non_Attrition_MonthlyIncome, MIN(MonthlyIncome) AS min_Non_Attrition_MonthlyIncome, MAX(MonthlyIncome) AS max_Non_Attrition_MonthlyIncome
+FROM employee_sales_2
+WHERE Attrition LIKE "%false%";
+
+
+
+#Original
+#Basic Statistics (average age, age range) on the whole sample:
+SELECT AVG(Age) AS average_age, MIN(Age) AS min_age, MAX(Age) AS max_age
+FROM survey_consequences;
+
+#Original
+#Statistics with those who answered YES to mental health consequences:
+
+SELECT AVG(Age) AS average_age_mental_health_consquence, MIN(Age) AS min_age_mental_health_consequence, MAX(Age) AS max_age_mental_health_consequence
+FROM survey_consequences
+WHERE mental_health_consequence LIKE "%Yes%";
+
+#Original
+#Statistics for those answering YES to physical health consequences:
+
+SELECT AVG(Age) AS average_age_phys_health_consquence, MIN(Age) AS min_age_phys_health_consequence, MAX(Age) AS max_age_phys_health_consequence
+FROM survey_consequences
+WHERE phys_health_consequence LIKE "%Yes%";
+
+
+
+3. Histograms
+
+#Distribution of Monthly Income in the entire sample:
+
+SELECT MonthlyIncome, COUNT(MonthlyIncome) AS count
+FROM employee_sales_2
+GROUP BY MonthlyIncome;
+
+
+#Distribution of Monthly Income in the Attrition sample:
+
+SELECT MonthlyIncome, COUNT(MonthlyIncome) AS count
+FROM employee_sales_2
+WHERE Attrition LIKE "%true%"
+GROUP BY MonthlyIncome;
+
+
+#Distribution of Monthly Income in the Non Attrition sample:
+
+SELECT MonthlyIncome, COUNT(MonthlyIncome) AS count
+FROM employee_sales_2
+WHERE Attrition LIKE "%false%"
+GROUP BY MonthlyIncome;
+
+
+
+#Original
+#Distribution of ages in the entire sample:
+
+SELECT Age, COUNT(Age) AS count
+FROM survey_consequences
+GROUP BY Age;
+
+
+#Distribution of ages filtered for mental health  consequences using the WHERE clause:
+
+SELECT Age, COUNT(Age) AS count
+FROM survey_consequences
+WHERE mental_health_consequence LIKE "%Yes%"
+GROUP BY Age;
+
+
+#Distribution of ages filtered for physical health  consequences using the WHERE clause:
+
+SELECT Age, COUNT(Age) AS count
+FROM survey_consequences
+WHERE phys_health_consequence LIKE "%Yes%"
+GROUP BY Age;
