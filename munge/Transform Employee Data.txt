@@ -1,0 +1,160 @@
+#From Data Load Activity
+
+1.
+#Load data into container Employee and call table Employee 
+
+
+CREATE EXTERNAL TABLE employee
+
+(
+  Age int,
+  Attrition boolean,
+  BusinessTravel string,
+  DailyRate float,
+  Department string,
+  DistanceFromHome int,
+  Education int,
+  EducationField string,
+  EmployeeCount int,
+  EmployeeNumber int,
+  EnvironmentSatisfaction int,
+  Gender string,
+  HourlyRate float,
+  JobInvolvement int,
+  JobLevel int,
+  JobRole string,
+  JobSatisfaction int,
+  MaritalStatus string,
+  MonthlyIncome int,
+  MonthlyRate float,
+  NumCompaniesWorked int,
+  Over18 boolean,
+  OverTime boolean,
+  PercentSalaryHike float,
+  PerformanceRating int,
+  RelationshipSatisfaction int,
+  StandardHours float,
+  StockOptionLevel int,
+  TotalWorkingYears int,
+  TrainingTimesLastYear int,
+  WorkLifeBalance int,
+  YearsAtCompany int,
+  YearsInCurrentRole int,
+  YearsSinceLastPromotion int,
+  YearsWithCurrManager int
+ )
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n'
+STORED AS TEXTFILE LOCATION '/Employee'
+TBLPROPERTIES("skip.header.line.count"="1");
+
+
+#Check that the load worked:
+
+SELECT * FROM employee LIMIT 10;
+
+
+Assignment 2: Data Transformation Activity
+
+1. 
+# Create new table to work in called employee_sales
+
+CREATE TABLE employee_sales
+(
+Attrition boolean,
+Department string,
+JobSatisfaction int,
+MonthlyIncome float
+);
+
+
+# Check that the table has been created with this query:
+
+SELECT * FROM employee_sales LIMIT 10;
+
+
+
+2. 
+# Now you will need to select the data from the employee table into your table employee_sales table:
+
+INSERT OVERWRITE TABLE employee_sales
+SELECT Attrition, Department, JobSatisfaction, MonthlyIncome
+FROM employee;
+
+#Original:
+INSERT OVERWRITE TABLE survey_consequences     # insert the data from the query that follows into the table survey_consequence and overwrite the table (that is, erase the existing data first).  All of our Hive transformations will start his way.  
+SELECT Age, mental_health_consequence, phys_health_consequence, obs_consequence  #Selects required columns
+FROM survey;       #from the Survey table
+
+
+#Check that the transformation worked:
+
+SELECT * FROM employee_sales LIMIT 10;
+
+
+
+3. 
+#  Mutate the age data so that the MonthlyIncome is rounded to $1000.
+
+INSERT OVERWRITE TABLE employee_sales
+SELECT Attrition, Department, JobSatisfaction, round(MonthlyIncome, -3)
+FROM employee_sales;
+
+#Original:
+INSERT OVERWRITE TABLE survey_consequences
+SELECT Age + 4 AS Age, mental_health_consequence, phys_health_consequence, obs_consequence
+FROM survey_consequences;
+
+
+#Check that the transformation worked:
+
+SELECT * FROM employee_sales LIMIT 10;
+
+
+4.
+#  filter transformation, filtering for rows where the response to obs_consquences is Yes.
+
+INSERT OVERWRITE TABLE employee_sales
+SELECT *
+FROM employee_sales
+WHERE Department LIKE "%Sales%"; 
+
+#Original
+INSERT OVERWRITE TABLE survey_consequences
+SELECT *
+FROM survey_consequences
+WHERE obs_consequence LIKE "%Yes%";         #Use = for numbers. Use LIKE instead of = for text so close matches are used.“%” tells SQL to ignore anything where the “%” is.  “%Yes%” says ignore everything before and after “Yes”, returning every row that contains “Yes”. 
+
+
+#Check that the transformation worked:
+
+SELECT * FROM employee_sales LIMIT 10;
+
+
+5.
+# Arrange the table by JobSatisfaction;
+
+INSERT OVERWRITE TABLE employee_sales
+SELECT *
+FROM employee_sales
+ORDER BY JobSatisfaction DESC;
+
+#Original:
+INSERT OVERWRITE TABLE survey_consequences
+SELECT *
+FROM survey_consequences
+ORDER BY Age;
+
+
+#Check that the transformation worked:
+
+SELECT * FROM employee_sales LIMIT 10;
+
+
+6.
+# Select only those = or over 25 years of age
+
+INSERT OVERWRITE TABLE survey_consequences
+SELECT *
+FROM survey_consequences
+WHERE Age >= 25
