@@ -1,0 +1,4 @@
+Data for Human Resources Analysis Project can be found in the following directory: C:\Users\Documents\School\Data Analytics\Data Analysis Tools for Analytics\Module 3
+The file is called Employee.csv
+
+This data includes 1470 individuals and their attrition rates within the company. 
